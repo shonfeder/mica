@@ -33,7 +33,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
     <!-- Load syntax highlighting package for OCaml -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/ocaml.min.js"></script>
-    <script>hljs.highlightAll();</script>
 
     <h1>Mica Demo</h1>
 
@@ -111,6 +110,9 @@
                 micaContent.innerHTML = '<span class="loading">Loading code produced by Mica...</span>';
 
                 try {
+                    // Refresh syntax highlighting
+                    hljs.highlightAll();
+
                     const originalFileName = originalFileMap[selectedKey];
                     const micaFileName = micaFileMap[selectedKey];
 
@@ -123,8 +125,12 @@
                         fetchContent(micaFileName)
                     ]);
 
-                    moduleSig.innerHtml = originalFileContent;
-                    micaContent.innerHtml = optimizedFileContent;
+                    moduleSig.textContent = originalFileContent;
+                    micaContent.textContent = optimizedFileContent;
+
+                    // Enable syntax highlighting
+                    hljs.highlightElement(moduleSig);
+                    hljs.highlightElement(micaContent);
                 } catch (error) {
                     console.error('Error fetching files:', error);
                     moduleSig.textContent = error.message || 'Error loading original file';
