@@ -107,7 +107,7 @@
             const selectedKey = select.value;
 
             if (selectedKey) {
-                moduleSig.innerHTML = '<span class="loading">Loading moduel signature...</span>';
+                moduleSig.innerHTML = '<span class="loading">Loading module signature...</span>';
                 micaContent.innerHTML = '<span class="loading">Loading code produced by Mica...</span>';
 
                 try {
@@ -123,8 +123,8 @@
                         fetchContent(micaFileName)
                     ]);
 
-                    moduleSig.textContent = originalFileContent;
-                    micaContent.textContent = optimizedFileContent;
+                    moduleSig.innerHtml = originalFileContent;
+                    micaContent.innerHtml = optimizedFileContent;
                 } catch (error) {
                     console.error('Error fetching files:', error);
                     moduleSig.textContent = error.message || 'Error loading original file';
