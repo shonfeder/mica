@@ -33,15 +33,6 @@
 
     <select id="fileSelect" onchange="displayFiles()">
         <option value="">Select an example module signature</option>
-        <!-- TODO: add separate signature file for Queues, How to Specify It -->
-        <option value="case_studies/sets/set_signature.ml">Finite Sets</option>
-        <option value="case_studies/regexes/regex_signature.ml">Regex Matcher</option>
-        <option value="case_studies/polynomials/polynomial_signature.ml">Polynomials</option>
-        <option value="case_studies/maps/map_signature.ml">Persistent Maps</option>
-        <option value="case_studies/queues/queue_signature.ml">Ephemeral Queues</option>
-        <option value="case_studies/charsets/charset_signature.ml">Character Sets</option>
-        <option value="case_studies/how_to_specify_it/bst_signature.ml"><i>How to Specify It</i> (Hughes '19) Binary Search Trees</option>
-        <option value="case_studies/student_submissions/setInterface.ml">Penn CIS 1200 Student Homework Submissions</option>
     </select>
 
     <h2>Module Signature:</h2>
@@ -51,6 +42,50 @@
     <pre id="micaContent"></pre>
 
     <script>
+        const SUBDIR = "case_studies"
+
+        const originalFileMap = {
+            'set': `${SUBDIR}/sets/set_signature.ml`,
+            'regex': `${SUBDIR}/regexes/regex_signature.ml`,
+            'polynomial': `${SUBDIR}/polynomials/polynomial_signature.ml`,
+            'map': `${SUBDIR}/maps/map_signature.ml`,
+            'queue': `${SUBDIR}/queues/queue_signature.ml`,
+            'charset': `${SUBDIR}/charsets/charset_signature.ml`,
+            'bst': `${SUBDIR}/how_to_specify_it/bst_signature.ml`,
+            'cis1200': `${SUBDIR}/student_submissions/setInterface.ml`,
+        }
+
+        const micaFileMap = {
+            'set': `${SUBDIR}/sets/mica_sets.ml`,
+            'regex': `${SUBDIR}/regexes/mica_regexes.ml`,
+            'polynomial': `${SUBDIR}/polynomials/mica_polynomials.ml`,
+            'map': `${SUBDIR}/maps/mica_maps.ml`,
+            'queue': `${SUBDIR}/queues/mica_queues.ml`,
+            'charset': `${SUBDIR}/charsets/mica_charsets.ml`,
+            'bst': `${SUBDIR}/how_to_specify_it/mica_how_to_specify_it.ml`,
+            'cis1200': `${SUBDIR}/student_submissions/mica.ml`,
+        }
+
+        const displayNameMap = {
+            'set': 'Finite Set',
+            'regex': 'Regex Matcher',
+            'polynomial': 'Polynomial',
+            'map': 'Persistent Map',
+            'queue': 'Ephemeral Queue',
+            'charset': 'Character Set',
+            'bst': 'How to Specify It (Hughes \'19) Binary Search Tree Example',
+            'cis1200': 'Penn CIS 1200 Student Homework Submissions'
+        }
+        
+        // Populate the select element
+        const select = document.getElementById('fileSelect');
+        for (const [key, displayName] of Object.entries(displayNameMap)) {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = displayName;
+            select.appendChild(option);
+        }
+
         async function fetchContent(file) {
             const response = await fetch(`https://raw.githubusercontent.com/ngernest/mica/web/${file}`);
             if (!response.ok) {
@@ -63,27 +98,31 @@
             const select = document.getElementById('fileSelect');
             const moduleSig = document.getElementById('moduleSig');
             const micaContent = document.getElementById('micaContent');
-            const selectedFile = select.value;
+            const selectedKey = select.value;
 
-            if (selectedFile) {
-                moduleSig.innerHTML = '<span class="loading">Loading original file...</span>';
-                micaContent.innerHTML = '<span class="loading">Loading optimized file...</span>';
+            if (selectedKey) {
+                moduleSig.innerHTML = '<span class="loading">Loading moduel signature...</span>';
+                micaContent.innerHTML = '<span class="loading">Loading code produced by Mica...</span>';
 
                 try {
-                    const originalFileName = selectedFile;
-                    const optimizedFileName = selectedFile.replace('.ml', '_optimized.ml');
+                    const originalFileName = originalFileMap[selectedKey];
+                    const micaFileName = micaFileMap[selectedKey];
+
+                    if (!originalFileName || !micaFileName) {
+                        throw new Error('File not found for the selected implementation');
+                    }
 
                     const [originalFileContent, optimizedFileContent] = await Promise.all([
                         fetchContent(originalFileName),
-                        fetchContent(optimizedFileName)
+                        fetchContent(micaFileName)
                     ]);
 
                     moduleSig.textContent = originalFileContent;
                     micaContent.textContent = optimizedFileContent;
                 } catch (error) {
                     console.error('Error fetching files:', error);
-                    moduleSig.textContent = 'Error loading original file';
-                    micaContent.textContent = 'Error loading optimized file';
+                    moduleSig.textContent = error.message || 'Error loading original file';
+                    micaContent.textContent = error.message || 'Error loading optimized file';
                 }
             } else {
                 moduleSig.textContent = '';
