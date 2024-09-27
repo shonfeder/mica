@@ -29,6 +29,11 @@
     </style>
 </head>
 <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+    <!-- Load syntax highlighting package for OCaml -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/ocaml.min.js"></script>
+
     <h1>Mica Demo</h1>
 
     <select id="fileSelect" onchange="displayFiles()">
@@ -36,10 +41,10 @@
     </select>
 
     <h2>Module Signature:</h2>
-    <pre id="moduleSig"></pre>
+    <pre id="moduleSig"><code class="language-ocaml"></code></pre>
 
     <h2>Property-based testing code (produced by Mica automatically):</h2>
-    <pre id="micaContent"></pre>
+    <pre id="micaContent"><code class="language-ocaml"></code></pre>
 
     <script>
         const SUBDIR = "case_studies"
